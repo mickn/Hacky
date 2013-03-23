@@ -41,8 +41,20 @@
       TFHppleElement *titleTd = [titleTds objectAtIndex:1];
       TFHppleElement *titleA = [titleTd firstChildWithTagName:@"a"];
       [story setValue:[titleA text] forKey:@"title"];
-      [story setValue:[titleA objectForKey:@"href"] forKey:@"url"];
-      
+
+        // Check if URL is relative
+        NSString *checkRelativeURL = [titleA objectForKey:@"href"];
+        BOOL result = [[checkRelativeURL lowercaseString] hasPrefix:@"http"];
+        
+        if (!result) {
+            NSString* baseUrl = @"http://news.ycombinator.com/";
+            NSString* localUrl = [baseUrl stringByAppendingString:checkRelativeURL];
+            [story setValue:localUrl forKey:@"url"];
+        }
+        else {
+            [story setValue:[titleA objectForKey:@"href"] forKey:@"url"];
+        }
+
       // --- Get id
       NSArray* tds = [tr childrenWithTagName:@"td"];
       TFHppleElement* upvoteTd = [tds objectAtIndex:1];
